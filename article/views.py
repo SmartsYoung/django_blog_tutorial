@@ -25,6 +25,8 @@ from django.views import View
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView
 
+# 引入评论表单
+from comment.forms import CommentForm
 
 # 文章列表
 def article_list(request):
@@ -112,6 +114,8 @@ def article_detail(request, id):
     )
     article.body = md.convert(article.body)
 
+    # 引入评论表单
+    comment_form = CommentForm()
     # 需要传递给模板的对象
     context = {
         'article': article,
@@ -119,6 +123,7 @@ def article_detail(request, id):
         'comments': comments,
         'pre_article': pre_article,
         'next_article': next_article,
+        'comment_form': comment_form,
     }
     # 载入模板，并返回context对象
     return render(request, 'article/detail.html', context)

@@ -9,6 +9,8 @@
 
 <!-- 写入 base.html 中定义的 content -->
 {% block content %}
+<script src="{% static 'ckeditor/ckeditor/plugins/prism/lib/prism/prism_patched.min.js' %}"></script>
+<link rel="stylesheet" href="{% static 'prism/prism.css' %}">
 
 <!-- 文章详情 -->
 <div class="container">
@@ -36,12 +38,36 @@
             </div>
 
 
+            <!-- 相邻文章导航 -->
+            <br>
+            <div class="row justify-content-end">
+                {% if next_article %}
+                <div class="col-auto mr-auto">
+                    <a  href="{{ next_article.get_absolute_url }}"
+                        class="btn btn-info"
+                        >
+                        {{ next_article.title }}
+                    </a>
+                </div>
+                {% endif %}
+            {% if pre_article %}
+                <div class="col-auto">
+                    <a  href="{{ pre_article.get_absolute_url }}"
+                    class="btn btn-info"
+                    >
+                        {{ pre_article.title }}
+                    </a>
+                </div>
+            {% endif %}
+            </div>
+
+
             <!-- 发表评论 -->
             <hr>
             {% if user.is_authenticated %}
                 <div>
-                    <form 
-                        action="{% url 'comment:post_comment' article.id %}" 
+                    <form
+                        action="{% url 'comment:post_comment' article.id %}"
                         method="POST"
                     >
                     {% csrf_token %}
@@ -51,15 +77,13 @@
                                     我也要发言：
                                 </strong>
                             </label>
-                            <textarea 
-                                type="text" 
-                                class="form-control" 
-                                id="body" 
-                                name="body" 
-                                rows="2"></textarea>
+                            <div>
+                                {{ comment_form.media }}
+                                {{ comment_form.body }}
+                            </div>
                         </div>
                         <!-- 提交按钮 -->
-                        <button type="submit" class="btn btn-primary ">发送</button>                    
+                        <button type="submit" class="btn btn-primary ">发送</button>
                     </form>
                 </div>
                 <br>
@@ -70,7 +94,7 @@
                 </h5>
                 <br>
             {% endif %}
-            
+
 
 
             <!-- 显示评论 -->
@@ -81,13 +105,12 @@
                     <p>
                         <strong style="color: pink">
                             {{ comment.user }}
-                        </strong> 于 
+                        </strong> 于
                         <span style="color: green">
                             {{ comment.created|date:"Y-m-d H:i:s" }}
                         </span> 时说：
                     </p>
-                    <pre style="font-family: inherit; font-size: 1em;">
-{{ comment.body }}</pre>
+                    <div>{{ comment.body|safe }}</div>
                 {% endfor %}
             </div>
         </div>
@@ -120,5 +143,10 @@
         })
     }
 </script>
-
 {% endblock content %}
+
+{% block script %}
+<script>
+    $(".django-ckeditor-widget").removeAttr('style');
+</script>
+{% endblock script %}
