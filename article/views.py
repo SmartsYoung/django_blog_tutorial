@@ -28,48 +28,50 @@ from django.views.generic.edit import CreateView
 
 # 文章列表
 def article_list(request):
+    # 从 url 中提取查询参数
     search = request.GET.get('search')
     order = request.GET.get('order')
     column = request.GET.get('column')
+    tag = request.GET.get('tag')
 
+    # 初始化查询集
     article_list = ArticlePost.objects.all()
 
-    # 用户搜索逻辑
+    # 搜索查询集
     if search:
         article_list = article_list.filter(
             Q(title__icontains=search) |
             Q(body__icontains=search)
         )
     else:
-        # 将 search 参数重置为空
         search = ''
 
-    # 根据GET请求中查询条件
-    # 返回不同的对象数组
+    # 栏目查询集
     if column is not None and column.isdigit():
-        # 相同栏目的查询集
         article_list = article_list.filter(column=column)
 
+    # 标签查询集
+    if tag and tag != 'None':
+        article_list = article_list.filter(tags__name__in=[tag])
+
+    # 查询集排序
     if order == 'total_views':
-        # 按热度排序博文
         article_list = article_list.order_by('-total_views')
 
-    # 每页显示 1 篇文章
     paginator = Paginator(article_list, 3)
-    # 获取 url 中的页码
     page = request.GET.get('page')
-    # 将导航对象相应的页码内容返回给 articles
     articles = paginator.get_page(page)
+
     # 需要传递给模板（templates）的对象
     context = {
         'articles': articles,
         'order': order,
         'search': search,
         'column': column,
+        'tag': tag,
     }
-    # render函数：载入模板，并返回context对象
-    return render(request, 'article/list.html', context)
 
+    return render(request, 'article/list.html', context)
 
 # 文章详情
 def article_detail(request, id):
@@ -141,6 +143,9 @@ def article_create(request):
             # 将新文章保存到数据库中
             new_article.save()
             # 完成后返回到文章列表
+
+            # 新增代码，保存 tags 的多对多关系
+            article_post_form.save_m2m()
             return redirect("article:article_list")
         # 如果数据不合法，返回错误信息
         else:

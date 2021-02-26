@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 from django.urls import reverse
+from taggit.managers import TaggableManager
+
 
 class ArticleColumn(models.Model):
     """
@@ -45,6 +47,9 @@ class ArticlePost(models.Model):
     # 文章正文。
     # 保存大量文本使用 TextField
     body = models.TextField()
+
+    # 文章标签
+    tags = TaggableManager(blank=True)
 
     # 浏览量
     total_views = models.PositiveIntegerField(default=0)
