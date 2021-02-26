@@ -1,3 +1,4 @@
+from PIL import Image
 from django.db import models
 # Django本身具有一个简单又完整的账号系统（User），足以满足一般网站的账号申请、建立、权限、群组等基本功能
 # 因此这里导入内建的User模型，以便使用。
@@ -44,6 +45,9 @@ class ArticlePost(models.Model):
     # CharField 有一个必填参数 max_length，它规定字符的最大长度
     title = models.CharField(max_length=100)
 
+    # 文章标题图
+    avatar = models.ImageField(upload_to='article/%Y%m%d/', blank=True)
+
     # 文章正文。
     # 保存大量文本使用 TextField
     body = models.TextField()
@@ -79,3 +83,23 @@ class ArticlePost(models.Model):
     # 获取文章地址
     def get_absolute_url(self):
         return reverse('article:article_detail', args=[self.id])
+
+        # 前面写好的代码
+
+    avatar = models.ImageField(upload_to='article/%Y%m%d/', blank=True)
+
+    # 保存时处理图片
+    def save(self, *args, **kwargs):
+        # 调用原有的 save() 的功能
+        article = super(ArticlePost, self).save(*args, **kwargs)
+
+        # 固定宽度缩放图片大小
+        if self.avatar and not kwargs.get('update_fields'):
+            image = Image.open(self.avatar)
+            (x, y) = image.size
+            new_x = 400
+            new_y = int(new_x * (y / x))
+            resized_image = image.resize((new_x, new_y), Image.ANTIALIAS)
+            resized_image.save(self.avatar.path)
+
+        return article
