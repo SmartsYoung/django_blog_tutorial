@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import notifications
 from django.contrib import admin
 # 记得引入include
 from django.urls import path, include
@@ -32,5 +33,8 @@ urlpatterns = [
     path('userprofile/', include('userprofile.urls', namespace='userprofile')),
     # 评论
     path('comment/', include('comment.urls', namespace='comment')),
+    path('inbox/notifications/', include('notifications.urls', namespace='notifications')),
+    # notice
+    path('notice/', include('notice.urls', namespace='notice')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
