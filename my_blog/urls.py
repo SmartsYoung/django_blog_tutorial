@@ -23,6 +23,8 @@ from django.conf.urls.static import static
 
 
 # 存放了映射关系的列表
+from article.views import article_list
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     # 重置密码app
@@ -36,5 +38,8 @@ urlpatterns = [
     path('inbox/notifications/', include('notifications.urls', namespace='notifications')),
     # notice
     path('notice/', include('notice.urls', namespace='notice')),
+    path('accounts/', include('allauth.urls')),
+    # home
+    path('', article_list, name='home'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
