@@ -314,3 +314,12 @@ class ArticleCreateView(CreateView):
     # 或者有选择的提交字段，比如：
     # fields = ['title']
     template_name = 'article/create_by_class_view.html'
+
+
+# 点赞数 +1
+class IncreaseLikesView(View):
+    def post(self, request, *args, **kwargs):
+        article = ArticlePost.objects.get(id=kwargs.get('id'))
+        article.likes += 1
+        article.save()
+        return HttpResponse('success')

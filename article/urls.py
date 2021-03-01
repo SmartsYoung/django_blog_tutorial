@@ -22,4 +22,10 @@ urlpatterns = [
     path('detail-view/<int:pk>/', views.ArticleDetailView.as_view(), name='detail_view'),
     # 创建类视图
     path('create-view/', views.ArticleCreateView.as_view(), name='create_view'),
+    # 点赞 +1
+    path(
+        'increase-likes/<int:id>/',
+        views.IncreaseLikesView.as_view(),
+        name='increase_likes'
+    ),
 ]

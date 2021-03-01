@@ -67,6 +67,9 @@ class ArticlePost(models.Model):
     # 参数 auto_now=True 指定每次数据更新时自动写入当前时间
     updated = models.DateTimeField(auto_now=True)
 
+    # 新增点赞数统计
+    likes = models.PositiveIntegerField(default=0)
+
     # 内部类 class Meta 用于给 model 定义元数据
     # 元数据：不是一个字段的任何数据
     class Meta:
